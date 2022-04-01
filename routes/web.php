@@ -17,7 +17,3 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/test', function () {
-    dd(Http::get('http://locahost:9000/api/banksystem/auca/students/payments'));
-});
