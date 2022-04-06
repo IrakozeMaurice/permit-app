@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Student;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -34,16 +35,28 @@ class RegisteredUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'studentId' => ['required', 'unique:users'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $client = new \GuzzleHttp\Client();
+        $req = $client->get('http://localhost:9000/api/auca/student/' . request('studentId'));
+        $response = json_decode($req->getBody());
+        if (isset($response) && !empty($response)) {
+            $user = User::create([
+                'studentId' => $request->studentId,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+
+            Student::create([
+                'studentId' => $request->studentId,
+                'email' => $request->email,
+            ]);
+        } else {
+            return back()->withErrors(["unregisteredStudent" => "Your student id is not registered in the school system"]);;
+        }
 
         event(new Registered($user));
 
