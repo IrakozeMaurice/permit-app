@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentsController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,11 @@ Route::get('/', function () {
 })->name('homepage');
 
 Route::get('/dashboard', [HomeController::class, 'index'])->middleware(['auth'])->name('dashboard');
+
+Route::group(['middleware' => ['auth:finance']], function () {
+    Route::get('finance/dashboard', [FinanceController::class, 'index'])->name('finance.dashboard');
+});
+
 Route::post('/payments', [PaymentsController::class, 'store'])->middleware(['auth'])->name('payments.store');
 
 require __DIR__ . '/auth.php';

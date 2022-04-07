@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'finance' => [
+            'driver' => 'session',
+            'provider' => 'finance_users',
+        ],
     ],
 
     /*
@@ -60,9 +65,15 @@ return [
     */
 
     'providers' => [
+
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+
+        'finance_users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\FinanceUser::class,
         ],
 
         // 'users' => [
