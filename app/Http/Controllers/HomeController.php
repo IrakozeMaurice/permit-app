@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
+use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Faker\Generator as Faker;
@@ -78,6 +79,10 @@ class HomeController extends Controller
         }
         $totalFee = $tuitionFee + $otherFees['registrationFee'] + $otherFees['lateFineFee'] + $otherFees['facilityFee'] + $otherFees['researchManualFee'] + $otherFees['studentCardFee'] + $otherFees['graduationFee'] + $otherFees['libraryCardFee'] + $otherFees['sanitationFee'];
         $paidFee = 0;
-        return view('dashboard', compact('student', 'faculty', 'department', 'registration', 'courses', 'group', 'creditCost', 'totalCredits', 'otherFees', 'tuitionFee', 'totalFee', 'paidFee', 'registrationYear'));
+
+        //GET STUDENT PAYMENTS
+        $stud = Student::where('studentId', auth()->user()->studentId)->first();
+        $payments = $stud->payments()->orderBy('created_at', 'desc')->get();
+        return view('dashboard', compact('student', 'payments', 'faculty', 'department', 'registration', 'courses', 'group', 'creditCost', 'totalCredits', 'otherFees', 'tuitionFee', 'totalFee', 'paidFee', 'registrationYear'));
     }
 }

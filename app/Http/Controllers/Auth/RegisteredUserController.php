@@ -55,7 +55,7 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
             ]);
         } else {
-            return back()->withErrors(["unregisteredStudent" => "Your student id is not registered in the school system"]);;
+            return back()->withErrors(["unregisteredStudent" => "Your student id is not registered in the school system"]);
         }
 
         event(new Registered($user));

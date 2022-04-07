@@ -9,7 +9,29 @@
 @section('username')
   {{ $student->names }}
 @endsection
-
+@section('sweetalertjs')
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+  <script type="text/javascript">
+    $('.show_confirm').click(function(event) {
+      var form = $(this).closest("form");
+      var name = $(this).data("name");
+      event.preventDefault();
+      swal({
+          title: `Confirm transaction`,
+          text: "are you sure you want to proceed with this transaction?",
+          icon: "warning",
+          buttons: true,
+          //   dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            form.submit();
+            $("#payBtn").attr("disabled", true);
+          }
+        });
+    });
+  </script>
+@endsection
 <x-app-layout>
   <x-slot name="header">
   </x-slot>
@@ -45,7 +67,15 @@
           <div class="tab-content mt-6">
             <div class="tab-pane active container" id="home">
               <div class="text-center mt-4" style="width: 60%;margin:auto;">
-                <form action="#" method="post">
+                <!-- Validation Errors -->
+                <x-auth-validation-errors class="mb-4" :errors="$errors" />
+                @if (session('success'))
+                  <div class="alert alert-success">
+                    <h5 class="text-center">{{ session('success') }}</h5>
+                    <p class="text-center">{{ session('message') }}</p>
+                  </div>
+                @endif
+                <form action="{{ route('payments.store') }}" method="POST">
                   @csrf
                   <div class="form-group">
                     <label for="exampleFormControlSelect1">Select Your Bank</label>
@@ -55,15 +85,20 @@
                     </select>
                   </div>
                   <div class="form-group">
-                    <label for="accountNumber">Account number</label>
-                    <input type="text" class="form-control" id="accountNumber" name="accountNumber">
+                    <input type="text" class="form-control" id="accountNumber" name="accountNumber"
+                      placeholder="bank account number" required>
                   </div>
                   <div class="form-group">
-                    <label for="amount">Amount</label>
-                    <input type="number" class="form-control" id="amount" name="amount">
+                    <input type="number" class="form-control" id="amount" name="amount" placeholder="amount to pay"
+                      required>
                   </div>
                   <div class="form-group">
-                    <button type="submit" class="btn btn-sm btn-primary"
+                    <textarea class="form-control" name="comment" cols="10" rows="2" placeholder=" comment" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <input name="_method" type="hidden" value="POST">
+                    <button type="submit" id="payBtn" class="btn btn-sm btn-primary show_confirm" data-toggle="tooltip"
+                      title='Pay now'
                       @empty($registration) disabled title="can't make payment without registration form" @endempty>pay
                       now</button>
                   </div>
@@ -231,21 +266,30 @@
                   <div class="col-lg-6">
                     <h1 class="h4 lead text-gray-800">Payment History</h1>
                     <hr>
-                    <small>Student charges for semester {{ $registration->semester }}
-                      {{ $registrationYear }}:&nbsp;&nbsp;
-                      <b><u>{{ $totalFee }}</u></b></small><br>
-                    <small>Amount paid {{ $paidFee }}</small><br>
-                    <small>Amount due: {{ $totalFee - $paidFee }}</small><br>
-                    <br>
-                    <hr>
+                    @forelse ($payments as $payment)
+                      <small>Payment date: {{ $payment->created_at }}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</small>
+                      <small>Amount paid: {{ $payment->amount }} Frw</small>
+                      <br>
+                      <hr>
+                    @empty
+                      <h5 class="jumbotron">No payments found.</h5>
+                    @endforelse
                   </div>
                 </div>
               @else
                 <div class="jumbotron text-center">
-                  <h5>No payment summary to show for now.</h5>
+                  <h1 class="h4 lead text-gray-800">Payment History</h1>
+                  <hr>
+                  @forelse ($payments as $payment)
+                    <small>Payment date: {{ $payment->created_at }}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</small>
+                    <small>Amount paid: {{ $payment->amount }} Frw</small>
+                    <br>
+                    <hr>
+                  @empty
+                    <p>No payments available for this account.</p>
+                  @endforelse
                 </div>
               @endif
-
             </div>
           </div>
         </div>

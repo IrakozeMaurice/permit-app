@@ -38,5 +38,6 @@
   </div>
   @yield('custom-js')
 </body>
+@yield('sweetalertjs')
 
 </html>
