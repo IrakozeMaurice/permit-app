@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Payment;
 use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -35,6 +34,7 @@ class HomeController extends Controller
         $response = json_decode($req->getBody());
         if (isset($response) && !empty($response)) {
 
+            // STUDENT IS REGISTERED I.E HAS REGISTRATION FORM
             $registration = $response[0];
             $registrationYear = Carbon::parse($registration->created_at)->year;
 
@@ -82,7 +82,8 @@ class HomeController extends Controller
 
         //GET STUDENT PAYMENTS
         $stud = Student::where('studentId', auth()->user()->studentId)->first();
+        $charge = $stud->charge;
         $payments = $stud->payments()->orderBy('created_at', 'desc')->get();
-        return view('dashboard', compact('student', 'payments', 'faculty', 'department', 'registration', 'courses', 'group', 'creditCost', 'totalCredits', 'otherFees', 'tuitionFee', 'totalFee', 'paidFee', 'registrationYear'));
+        return view('dashboard', compact('student', 'payments','charge', 'faculty', 'department', 'registration', 'courses', 'group', 'creditCost', 'totalCredits', 'otherFees', 'tuitionFee', 'totalFee', 'paidFee', 'registrationYear'));
     }
 }

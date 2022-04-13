@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\PaymentConfirmation;
+use App\Models\Charge;
 use App\Models\Payment;
 use App\Models\Student;
 use Carbon\Carbon;
@@ -43,8 +44,20 @@ class PaymentsController extends Controller
                 Payment::create([
                     'student_id' => Student::where('studentId', auth()->user()->studentId)->value('id'),
                     'paymentDate' => Carbon::now()->format('Y-m-d'),
-                    'amount' => request('amount')
+                    'amount' => request('amount'),
+                    'comment' => $transaction->comment,
+                    'bank_slip_number' => $transaction->bank_slip_number
                 ]);
+
+                // UPDATE STUDENT CHARGES
+                $Student = Student::where('studentId', auth()->user()->studentId)->first();
+                $charge = Charge::where('student_id', $Student->id)->first();
+                $charge->amount_paid += request('amount');
+                $charge->update();
+                $charge->amount_due = $charge->total_charges - $charge->amount_paid;
+                $charge->update();
+                $charge->percentage = $charge->amount_paid * 100 / $charge->total_charges;
+                $charge->update();
 
                 // SEND CONFIRMATION EMAIL
                 $details = [

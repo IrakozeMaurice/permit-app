@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Charge;
 use App\Models\Student;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
@@ -44,18 +45,71 @@ class RegisteredUserController extends Controller
         $req = $client->get('http://localhost:9000/api/auca/student/' . request('studentId'));
         $response = json_decode($req->getBody());
         if (isset($response) && !empty($response)) {
+            $StudentNames = $response[0]->names;
+            // STUDENT EXISTS IN SCHOOL SYSTEM
             $user = User::create([
                 'studentId' => $request->studentId,
+                'names' => $StudentNames,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
 
-            Student::create([
+            $Student = Student::create([
                 'studentId' => $request->studentId,
+                'names' => $StudentNames,
                 'email' => $request->email,
             ]);
+            // CHECK IF STUDENT IS REGISTERED I.E HAS REGISTRATION FORM
+            $req = $client->get('http://localhost:9000/api/auca/registration/' . $Student->studentId);
+            $response = json_decode($req->getBody());
+            if (isset($response) && !empty($response)) {
+
+                // STUDENT IS REGISTERED I.E HAS REGISTRATION FORM
+                $registration = $response[0];
+
+                // CALCULATE STUDENT CHARGES
+                // GET STUDENT REGISTRATION'S COURSES
+                $req = $client->get('http://localhost:9000/api/auca/registration/courses/' . $Student->studentId);
+                $response = json_decode($req->getBody());
+                $courses = $response;
+                $creditCost = 15875;
+                $totalCredits = 0;
+                foreach ($courses as $course) {
+                    $totalCredits += $course->credits;
+                }
+
+                //otherFees
+                if (empty($registration)) {
+                    $graduationFee = 0;
+                } else {
+                    $graduationFee = $registration->semester > 7 ? 45000 : 0;
+                }
+                $otherFees = [
+                    'registrationFee' => 20000,
+                    'lateFineFee' => 0,
+                    'facilityFee' => 0,
+                    'researchManualFee' => 0,
+                    'studentCardFee' => 0,
+                    'graduationFee' => $graduationFee,
+                    'libraryCardFee' => 2500,
+                    'sanitationFee' => 10000,
+                ];
+
+                $tuitionFee = 0;
+                foreach ($courses as $course) {
+                    $tuitionFee += $course->credits * $creditCost;
+                }
+                $totalFee = $tuitionFee + $otherFees['registrationFee'] + $otherFees['lateFineFee'] + $otherFees['facilityFee'] + $otherFees['researchManualFee'] + $otherFees['studentCardFee'] + $otherFees['graduationFee'] + $otherFees['libraryCardFee'] + $otherFees['sanitationFee'];
+                // SAVE STUDENT CHARGES
+                Charge::create([
+                    'student_id' => $Student->id,
+                    'total_charges' => $totalFee,
+                    'amount_paid' => 0,
+                    'amount_due' => $totalFee
+                ]);
+            }
         } else {
-            return back()->withErrors(["unregisteredStudent" => "Your student id is not registered in the school system"]);
+            return back()->withErrors(["unregisteredStudent" => "You are not registered in the school system"]);
         }
 
         event(new Registered($user));

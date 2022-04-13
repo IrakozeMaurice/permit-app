@@ -14,6 +14,8 @@ class CreatePaymentsTable extends Migration
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->date('paymentDate');
             $table->bigInteger('amount')->unsigned();
+            $table->string('comment');
+            $table->string('bank_slip_number');
             $table->timestamps();
         });
     }

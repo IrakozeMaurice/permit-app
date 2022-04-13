@@ -98,7 +98,6 @@
                   <div class="form-group">
                     <input name="_method" type="hidden" value="POST">
                     <button type="submit" id="payBtn" class="btn btn-sm btn-primary show_confirm" data-toggle="tooltip"
-                      title='Pay now'
                       @empty($registration) disabled title="can't make payment without registration form" @endempty>pay
                       now</button>
                   </div>
@@ -144,8 +143,8 @@
                           <td>{{ $course->name }}</td>
                           <td>{{ $course->credits }}</td>
                           <td>{{ $group }}</td>
-                          <td>{{ $creditCost }}</td>
-                          <td>{{ $creditCost * $course->credits }}</td>
+                          <td>{{ number_format($creditCost, 0, null, ',') }}</td>
+                          <td>{{ number_format($creditCost * $course->credits, 0, null, ',') }}</td>
                         </tr>
                       @endforeach
                     </tbody>
@@ -159,7 +158,7 @@
                       <span class="pl-4">Registration Fee: </span>
                     </div>
                     <div class="col-sm-6">
-                      <span>{{ $otherFees['registrationFee'] }}</span>
+                      <span>{{ number_format($otherFees['registrationFee'], 0, null, ',') }}</span>
                     </div>
                   </div>
                   <div class="row">
@@ -167,7 +166,7 @@
                       <span class="pl-4">Late Fine: </span>
                     </div>
                     <div class="col-sm-6">
-                      <span>{{ $otherFees['lateFineFee'] }}</span>
+                      <span>{{ number_format($otherFees['lateFineFee'], 0, null, ',') }}</span>
                     </div>
                   </div>
                   <div class="row">
@@ -175,7 +174,7 @@
                       <span class="pl-4">Facility Fee: </span>
                     </div>
                     <div class="col-sm-6">
-                      <span>{{ $otherFees['facilityFee'] }}</span>
+                      <span>{{ number_format($otherFees['facilityFee'], 0, null, ',') }}</span>
                     </div>
                   </div>
                   <div class="row">
@@ -183,7 +182,7 @@
                       <span class="pl-4">Research Manual: </span>
                     </div>
                     <div class="col-sm-6">
-                      <span>{{ $otherFees['researchManualFee'] }}</span>
+                      <span>{{ number_format($otherFees['researchManualFee'], 0, null, ',') }}</span>
                     </div>
                   </div>
                   <div class="row">
@@ -191,7 +190,7 @@
                       <span class="pl-4">Student Card: </span>
                     </div>
                     <div class="col-sm-6">
-                      <span>{{ $otherFees['studentCardFee'] }}</span>
+                      <span>{{ number_format($otherFees['studentCardFee'], 0, null, ',') }}</span>
                     </div>
                   </div>
                   <div class="row">
@@ -199,7 +198,7 @@
                       <span class="pl-4">Graduation Fee: </span>
                     </div>
                     <div class="col-sm-6">
-                      <span>{{ $otherFees['graduationFee'] }}</span>
+                      <span>{{ number_format($otherFees['graduationFee'], 0, null, ',') }}</span>
                     </div>
                   </div>
                   <div class="row">
@@ -207,7 +206,7 @@
                       <span class="pl-4">Library Card Fee: </span>
                     </div>
                     <div class="col-sm-6">
-                      <span>{{ $otherFees['libraryCardFee'] }}</span>
+                      <span>{{ number_format($otherFees['libraryCardFee'], 0, null, ',') }}</span>
                     </div>
                   </div>
                   <div class="row">
@@ -215,7 +214,7 @@
                       <span class="pl-4">Sanitation Fee: </span>
                     </div>
                     <div class="col-sm-6">
-                      <span>{{ $otherFees['sanitationFee'] }}</span>
+                      <span>{{ number_format($otherFees['sanitationFee'], 0, null, ',') }}</span>
                     </div>
                   </div>
                   <div class="row">
@@ -223,7 +222,7 @@
                       <span class="pl-4">Tuition Fee: </span>
                     </div>
                     <div class="col-sm-6">
-                      <span>{{ $tuitionFee }}</span>
+                      <span>{{ number_format($tuitionFee, 0, null, ',') }}</span>
                     </div>
                   </div>
                   <div class="row">
@@ -231,7 +230,7 @@
                       <span class="pl-4"><b>TOTAL TO BE PAID: </b></span>
                     </div>
                     <div class="col-sm-6">
-                      <span><b>{{ $totalFee }}</b></span>
+                      <span><b>{{ number_format($totalFee, 0, null, ',') }}</b></span>
                     </div>
                   </div>
                 </div>
@@ -257,9 +256,9 @@
                     <hr>
                     <small>Student charges for semester {{ $registration->semester }}
                       {{ $registrationYear }}:&nbsp;&nbsp;
-                      <b><u>{{ $totalFee }}</u></b></small><br>
-                    <small>Amount paid: {{ $paidFee }}</small><br>
-                    <small>Amount due: {{ $totalFee - $paidFee }}</small><br>
+                      <b><u>{{ number_format($charge->total_charges, 0, null, ',') }}</u></b></small><br>
+                    <small>Amount paid: {{ number_format($charge->amount_paid, 0, null, ',') }}</small><br>
+                    <small>Amount due: {{ number_format($charge->amount_due, 0, null, ',') }}</small><br>
                     <br>
                     <hr>
                   </div>
@@ -268,7 +267,7 @@
                     <hr>
                     @forelse ($payments as $payment)
                       <small>Payment date: {{ $payment->created_at }}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</small>
-                      <small>Amount paid: {{ $payment->amount }} Frw</small>
+                      <small>Amount paid: {{ number_format($payment->amount, 0, null, ',') }} Frw</small>
                       <br>
                       <hr>
                     @empty
@@ -282,7 +281,7 @@
                   <hr>
                   @forelse ($payments as $payment)
                     <small>Payment date: {{ $payment->created_at }}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</small>
-                    <small>Amount paid: {{ $payment->amount }} Frw</small>
+                    <small>Amount paid: {{ number_format($payment->amount, 0, null, ',') }} Frw</small>
                     <br>
                     <hr>
                   @empty
@@ -305,7 +304,7 @@
               </path>
             </svg>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;By&nbsp;</span>
-            <a href="https://github.com/sponsors/taylorotwell" class="ml-1 underline">
+            <a href="https://github.com/asokaniyonsaba" class="ml-1 underline">
               Asoka Niyonsaba
             </a>
           </div>
