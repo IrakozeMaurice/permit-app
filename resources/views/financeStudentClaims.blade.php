@@ -1,12 +1,12 @@
 @include('partials.finance-header')
           @if (session('message'))
-                  <div class="alert alert-success">
-                    <p class="text-center">{{ session('message') }}</p>
-                  </div>
-                @endif
+            <div class="alert alert-success">
+              <p class="text-center">{{ session('message') }}</p>
+            </div>
+          @endif
           <!-- Content Row -->
           <div class="row">
-            <table id="tableSearch" class="table table-bordered text-center small">
+            <table class="table table-bordered text-center small">
               <thead>
                 <tr>
                   <th class="text-center">Student Id</th>

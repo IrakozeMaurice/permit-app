@@ -15,7 +15,10 @@ class CreatePaymentsTable extends Migration
             $table->date('paymentDate');
             $table->bigInteger('amount')->unsigned();
             $table->string('comment');
-            $table->string('bank_slip_number');
+            $table->string('bank_slip');
+            $table->string('ref_number')->unique();
+            $table->boolean('accepted')->default(false);
+            $table->boolean('declined')->default(false);
             $table->timestamps();
         });
     }

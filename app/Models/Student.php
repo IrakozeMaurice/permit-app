@@ -20,4 +20,14 @@ class Student extends Model
     {
         return $this->hasOne(Charge::class);
     }
+
+    public function contract()
+    {
+        return $this->hasOne(contract::class);
+    }
+
+    public function claim()
+    {
+        return $this->hasOne(Claim::class);
+    }
 }

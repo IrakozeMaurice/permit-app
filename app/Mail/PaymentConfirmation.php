@@ -18,7 +18,7 @@ class PaymentConfirmation extends Mailable
 
     public function build()
     {
-        return $this->subject('Mail from auca.onlineschoolfeespayment.com')
+        return $this->subject('Mail from auca.studentaccountfollow-up.com')
             ->view('emails.confirm-payment')->with('details', $this->details);
     }
 }

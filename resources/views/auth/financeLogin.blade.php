@@ -11,7 +11,7 @@
 
     <!-- Validation Errors -->
     <x-auth-validation-errors class="mb-4" :errors="$errors" />
-
+    <h4 class="text-center text-primary"><b>You are signing in as Finance user</b></h4>
     <form method="POST" action="{{ route('finance.store') }}">
       @csrf
 
