@@ -246,10 +246,12 @@
                     @forelse ($payments as $payment)
                       <small>Payment date: {{ $payment->created_at }}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</small>
                       <small>Amount paid: {{ number_format($payment->amount, 0, null, ',') }} Frw</small>
-                      @if(!$payment->accepted)
-                      <span class="badge badge-pill badge-info">pending</span>
-                      @else
+                      @if($payment->accepted)
                       <span class="badge badge-pill badge-success">accepted</span>
+                      @elseif($payment->declined)
+                      <span class="badge badge-pill badge-danger">declined</span>
+                      @else
+                      <span class="badge badge-pill badge-info">pending</span>
                       @endif
                       <br>
                       <hr>
@@ -311,7 +313,7 @@
                         <td></td>
                       </tr>
                     </table>
-                    </div>
+                </div>
                       <a href="{{route('dashboard.permit.pdf')}}" class="btn btn-sm btn-primary">Download permit</a>
                     @else
                       <p>exam permit not avalaible. <span class="text-danger">MISSING REQUIREMENTS</span></p>
@@ -323,7 +325,7 @@
             </div>
             <div class="tab-pane container fade" id="menu4">
               <div class="jumbotron text-center">
-            @if ($contract)
+              @if ($contract)
               <h5 class="text-center">Contract of payment</h5>
               <hr>
               <div class="row">
@@ -352,30 +354,32 @@
                     </tr>
                 </tbody>
               </table>
-            <div class="row">
-            <p class="pl-3">That i <u>{{$student->names}}</u> hereby acknowledge that as of <u>{{$date}}</u> , I registered with the Adventist university of central africa</p>
-            <p class="pl-3">with <u>{{$totalCredits}}</u> credits and i promise to pay the total amount of fees on installment payment at the date as specified above.</p>
-            <p class="pl-3">That i accept and fully understand that tuition and fees paid upon registration is not refundable on whatever reason and that</p>
-            <p class="pl-3"><b>5%</b> penalty per month on the amount due will be charged on delayed payment.</p>
-            <br><br>
-            </div>
-            <br>
-            @if($contract->signed)
-            <p class="pl-3">
-              <a href="{{route('dashboard.contract.pdf')}}" class="btn btn-sm btn-primary">Download contract</a>
-            </p>
-            @else
+              <div class="row">
+                <p class="pl-3">That i <u>{{$student->names}}</u> hereby acknowledge that as of <u>{{$date}}</u> , I registered with the Adventist university of central africa</p>
+                <p class="pl-3">with <u>{{$totalCredits}}</u> credits and i promise to pay the total amount of fees on installment payment at the date as specified above.</p>
+                <p class="pl-3">That i accept and fully understand that tuition and fees paid upon registration is not refundable on whatever reason and that</p>
+                <p class="pl-3"><b>5%</b> penalty per month on the amount due will be charged on delayed payment.</p>
+                <br><br>
+              </div>
+              <br>
+              @if($contract->signed)
+              <p class="pl-3">
+                <a href="{{route('dashboard.contract.pdf')}}" class="btn btn-sm btn-primary">Download contract</a>
+              </p>
+              @else
               <p class="pl-3">
               <a href="{{route('dashboard.sign-contract')}}" class="btn btn-sm btn-success">Sign contract</a>
-            </p>
-            @endif
-          @else
-            @if($canClaim)
+              </p>
+              @endif
+              @else
+              @if($canClaim && $charge->percentage < 100)
               <a href="{{route('dashboard.claim-contract')}}" class="btn btn-sm btn-primary">claim late of contract</a>
-            @else
+              @elseif($charge->percentage >= 100)
+              <p>No contract available. <span class="text-success">YOU HAVE PAID THE FULL AMOUNT</span></p>
+              @else
               <p>No contract available. <span class="text-info">NO PAYMENTS MADE/ACCEPTED YET</span></p>
-            @endif
-          @endif
+              @endif
+              @endif
               </div>
             </div>
           </div>

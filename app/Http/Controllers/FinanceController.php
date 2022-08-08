@@ -48,7 +48,7 @@ class FinanceController extends Controller
 
         // GENERATE STUDENT CONTRACT
         $contract = Contract::where('student_id',$student->id)->first();
-        if (!$contract) {
+        if (!$contract && $payment->amount < $student->charge->total_charges && $student->charge->percentage < 100) {
             $contract = Contract::create([
                 'student_id' => $student->id,
                 'total_to_be_paid' => $student->charge->total_charges,

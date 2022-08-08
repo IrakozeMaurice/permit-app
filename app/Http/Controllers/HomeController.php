@@ -110,10 +110,10 @@ class HomeController extends Controller
 
         //check if student can claim late of contract
         $claim = $stud->claim;
-        if ($contract || $claim)
-            $canClaim = false;
-        else
+        $canClaim = false;
+        if (!$contract && !$claim && count($stud->payments) > 0)
             $canClaim = true;
+
         // dd($canClaim);
         session()->put('totalCredits',$totalCredits);
         return view('dashboard', compact('student', 'payments','charge','contract','date1','date2','date3','date', 'faculty', 'department', 'registration', 'courses', 'group', 'creditCost', 'totalCredits', 'otherFees', 'tuitionFee', 'totalFee', 'paidFee', 'registrationYear','permitReleased','canClaim'));
